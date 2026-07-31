@@ -1,5 +1,5 @@
 import asyncio
-from fastapi import FastAPI
+from fastapi import FastAPI # type:ignore
 from contextlib import asynccontextmanager
 from app.api.routes import router, batching_worker
 
