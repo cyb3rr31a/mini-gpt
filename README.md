@@ -77,15 +77,21 @@ Response:
 }
 ```
 
-### 📊 Benchmarks: Naive vs. Cached Inference
+## 📊 Benchmarks: Naive vs. Cached Inference
+
 Because generating each token requires the context of all previous tokens, naive inference scales quadratically. The KV-Cache implemented in this project flattens this curve, achieving consistent $O(1)$ latency per token regardless of sequence length.
 
-Sequence Length Naive Latency (ms) KV-Cache Latency (ms)
-10 tokens ~15ms ~15ms
-100 tokens ~150ms ~15ms
-500 tokens OOM / Crash ~15ms
+| Sequence Length | Naive Latency (ms) | KV-Cache Latency (ms) |
+|-----------------|--------------------|-----------------------|
+| 10 tokens       | ~15ms              | ~15ms                 |
+| 100 tokens      | ~150ms             | **~15ms**             |
+| 500 tokens      | OOM / Crash        | **~15ms**             |
 
-### 📁 Project Structure
+---
+
+## 📁 Project Structure
+
+```text
 mini-gpt-server/
 ├── app/
 │   ├── main.py               # FastAPI application and Lifespan manager
@@ -96,11 +102,13 @@ mini-gpt-server/
 │       └── routes.py         # Async queue, Batching Worker, /generate endpoint
 ├── train.py                  # Downloads data, runs training loop, saves weights
 └── run.py                    # Uvicorn entry point (initializes C++ math backends)
+└── requirements.txt
+└── README.md
+```
 
-
-### 📑 Resources
+## 📑 Resources
 *Neural Networks: Zero to Hero* by Andrej Karpathy @YouTube
 
-### 🤝 License
+## 🤝 License
 This project is open-source and available under the MIT License.
 
