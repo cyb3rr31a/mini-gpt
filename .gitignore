@@ -1,3 +1,6 @@
 *.pth
+gpt_env
 input.txt
-text.txt
+notes.txt
+__init__.py
+__pycache__/
