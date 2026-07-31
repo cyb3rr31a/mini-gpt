@@ -14,7 +14,7 @@ MAX_WAIT_TIME = 0.05
 request_queue = asyncio.Queue()
 
 # BPE Tokenizer
-enc = tiktoken.get_encoding("gpt-2")
+enc = tiktoken.get_encoding("gpt2")
 
 def encode(s: str) -> list[int]:
     return enc.encode(s)
@@ -23,7 +23,7 @@ def decode(l: list[int]) -> str:
     return enc.decode(l)
 
 model = MiniGPT(vocab_size=50257, embed_size=384, max_seq_length=128, num_layers=6, heads=6)
-model.load_state_dict(torch.load("minigpt_bpe_weights.pth", weights_only=True))
+model.load_state_dict(torch.load("minigpt_bpe.pth", weights_only=True))
 model.eval()
 
 class InferenceRequest(BaseModel):
