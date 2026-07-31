@@ -101,8 +101,9 @@ mini-gpt-server/
 │   └── api/                  
 │       └── routes.py         # Async queue, Batching Worker, /generate endpoint
 ├── train.py                  # Downloads data, runs training loop, saves weights
-└── run.py                    # Uvicorn entry point (initializes C++ math backends)
-└── requirements.txt
+├── run.py                    # Uvicorn entry point (initializes C++ math backends)
+├── ui.py                     # Gradio UI
+├── requirements.txt
 └── README.md
 ```
 
