@@ -32,10 +32,11 @@ def generate_response(message, history):
 
 # Create the Gradio interface
 demo = gr.ChatInterface(
-    fn=generate_response,
-    title="🎭 Shakespeare-GPT",
-    description="Introducing GPT for Modern English enthusiasts"
-)
+            fn=generate_response,
+            textbox=gr.Textbox(placeholder="Type in your prompt", container=False, scale=7),
+            title="🎭 Shakespeare-GPT",
+            description="A simple chatbot that generates text in the style of Shakespeare. Powered by a MiniGPT model.",
+        )
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(theme='soft')
