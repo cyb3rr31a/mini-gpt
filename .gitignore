@@ -1,4 +1,5 @@
 *.pth
+.gradio
 gpt_env
 input.txt
 notes.txt
