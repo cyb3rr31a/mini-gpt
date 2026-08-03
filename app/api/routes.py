@@ -3,7 +3,7 @@ import torch
 import tiktoken # type:ignore
 from fastapi import APIRouter # type:ignore
 from pydantic import BaseModel # type:ignore
-from app.model.generator import generate_cached
+from app.model.generator import generative_cached
 from app.model.architecture import MiniGPT
 
 router = APIRouter()
@@ -23,7 +23,8 @@ def decode(l: list[int]) -> str:
     return enc.decode(l)
 
 model = MiniGPT(vocab_size=50257, embed_size=384, max_seq_length=128, num_layers=6, heads=6)
-model.load_state_dict(torch.load("minigpt_bpe.pth", weights_only=True))
+checkpoint = torch.load("minigpt_weights.pth", weights_only=True)
+model.load_state_dict(checkpoint["model_state_dict"])
 model.eval()
 
 class InferenceRequest(BaseModel):
@@ -62,7 +63,7 @@ async def batching_worker():
             input_tensor = torch.tensor([req.prompt_tokens for req in batch])
 
             # Call the generator
-            batched_output = await asyncio.to_thread(generate_cached, model, input_tensor, 20)
+            batched_output = await asyncio.to_thread(generative_cached, model, input_tensor, 20)
 
             for i, queued_item in enumerate(batch):
                 queued_item.result = batched_output[i].tolist()
