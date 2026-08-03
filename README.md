@@ -24,10 +24,10 @@ It features a custom decoder-only transformer trained on Tiny Shakespeare, a man
 
 ## 🏗️ Architecture
 
-### 1. The Systems Engineering Flex: Dynamic Batching
+### 1. Systems Engineering : Dynamic Batching
 Standard web servers process requests sequentially, which leaves GPUs severely underutilized. This server intercepts incoming HTTP requests, holds them in an `asyncio` queue for up to 50ms, and stacks them into a single mathematical matrix. The GPU processes the batch simultaneously, and the server splits the outputs back to the correct users.
 
-### 2. The Math Flex: KV-Caching
+### 2. Math : KV-Caching
 Without a cache, generating the 100th token requires recalculating the attention scores for tokens 1–99. By manually appending past $K$ and $V$ matrices to a cache tensor during the forward pass, this model only ever runs a batch size of `Sequence_Length = 1` through the network during generation, ensuring flat, predictable latency.
 
 ---
