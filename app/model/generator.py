@@ -25,25 +25,29 @@ def generative_naive(model, context, max_new_tokens):
     return context
 
 @torch.no_grad()
-def generate_cached(model, context, max_new_tokens, temperature=0.8):
-    kv_cache = None
-    generated_sequence = context
-
+def generative_cached(model, context, max_new_tokens):
     max_seq_length = model.embeddings.position_embedding.num_embeddings
-
-    for _ in range(max_new_tokens):
-        # Forward pass: returns logits and the updated cache
-        context_cropped = context[:, -max_seq_length:]
-        logits, kv_cache = model(context_cropped, kv_cache)
-        next_token_logits = logits[:, -1, :]
-        next_token_logits = next_token_logits / temperature
-
-        # Convert to probabilities
-        probs = F.softmax(next_token_logits, dim=-1)
-        next_token = torch.multinomial(probs, num_samples=1) # roll weighted die
-
-        # Append to final output list
-        generated_sequence = torch.cat((generated_sequence, next_token), dim=1)
-        context = next_token
-
-    return generated_sequence
+ 
+    def prime(ctx):
+        # Fresh forward pass with no cache, over up to max_seq_length tokens.
+        ctx_cropped = ctx[:, -max_seq_length:]
+        logits, kv_cache = model(ctx_cropped)
+        cached_length = ctx_cropped.size(1)
+        return logits, kv_cache, cached_length
+ 
+    # Initial prefill over the prompt
+    logits, kv_cache, cached_length = prime(context)
+    next_token = torch.argmax(logits[:, -1, :], dim=-1, keepdim=True)
+    context = torch.cat((context, next_token), dim=1)
+ 
+    for _ in range(max_new_tokens - 1):
+        if cached_length >= max_seq_length:
+            logits, kv_cache, cached_length = prime(context)
+        else:
+            logits, kv_cache = model(next_token, past_kv_cache=kv_cache)
+            cached_length += 1
+ 
+        next_token = torch.argmax(logits[:, -1, :], dim=-1, keepdim=True)
+        context = torch.cat((context, next_token), dim=1)
+ 
+    return context
